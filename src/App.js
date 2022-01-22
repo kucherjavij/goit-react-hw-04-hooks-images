@@ -8,7 +8,7 @@ import {Conteiner} from './App.styled'
 function App () {
 const [page, setPage] = useState(1);
 const [pictureName, setPictureName] = useState('');
-  
+const [status, setStatus] = useState('idle');
   
   
  const onLoadMore = () => {
@@ -26,7 +26,9 @@ const [pictureName, setPictureName] = useState('');
 
       return <Conteiner>
   <Searchbar onSubmit={handleFormSubmit}/>
-  <ImageGallery pictureName={pictureName} page={page}/>
+
+
+  <ImageGallery pictureName={pictureName} page={page} handelStatus={setStatus} status={status}/>
   {pictureName && <Button onLoadNext={onLoadMore} />}
       </Conteiner>;
     

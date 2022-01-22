@@ -4,24 +4,24 @@ import {ImageGalleryList} from './ImageGalleryItem.styled'
 import fetchIMG from './API';
 
 
-function ImageGallery ({page, pictureName}) {
+function ImageGallery ({page, pictureName, handelStatus, status}) {
 const [pictures, setPicture] = useState(null);
 const [error, setError] = useState(null);
-const [status, setStatus] = useState('idle');
+
    
 useEffect(() => {
     if (!pictureName) {
         return
     }
     
-    setStatus('pending');
+    handelStatus('pending');
     fetchIMG(pictureName, 1)
     .then(picture => {
         setPicture(picture.hits);
-        setStatus('resolved')})
+        handelStatus('resolved')})
     .catch(error =>{ 
         setError(error);
-        setStatus('rejected')} )
+        handelStatus('rejected')} )
 }, [pictureName]);
 
 useEffect(() => {
@@ -35,20 +35,21 @@ useEffect(() => {
        [ ...pictures,
         ...picture.hits,]
       );
-       setStatus('resolved')})
+      handelStatus('resolved')})
     .catch(error => {
         setError(error);
-        setStatus('rejected')})
+        handelStatus('rejected')})
     }
 }, [page]);
-      
-if (status === 'idle') {
-    return <div>Write something...</div>
+
+
+   if (status === 'idle'){
+ return <div>Write something...</div>
 }
 
-        if (status === 'pending') {
-            return  <div>Loading...</div>
-          }
+   if (status === 'pending'){
+    return <div>Loading...</div>
+      }
 
           if (status === 'rejected') {
               return <h2>{error.message}</h2>
