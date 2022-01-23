@@ -1,71 +1,17 @@
-import React, { useState, useEffect } from 'react';
 import ImageGalleryItem from './ImageGalleryItem'
 import {ImageGalleryList} from './ImageGalleryItem.styled'
-import fetchIMG from './API';
 
 
-function ImageGallery ({page, pictureName, handelStatus, status}) {
-const [pictures, setPicture] = useState(null);
-const [error, setError] = useState(null);
 
-   
-useEffect(() => {
-    if (!pictureName) {
-        return
-    }
-    
-    handelStatus('pending');
-    fetchIMG(pictureName, 1)
-    .then(picture => {
-        setPicture(picture.hits);
-        handelStatus('resolved')})
-    .catch(error =>{ 
-        setError(error);
-        handelStatus('rejected')} )
-}, [pictureName]);
-
-useEffect(() => {
-    if (!pictureName) {
-        return
-    }
-    if (page !== 1) {
-        fetchIMG(pictureName, page)
-    .then(picture =>{ 
-        setPicture(
-       [ ...pictures,
-        ...picture.hits,]
-      );
-      handelStatus('resolved')})
-    .catch(error => {
-        setError(error);
-        handelStatus('rejected')})
-    }
-}, [page]);
+function ImageGallery ({pictures}) {
 
 
-   if (status === 'idle'){
- return <div>Write something...</div>
-}
-
-   if (status === 'pending'){
-    return <div>Loading...</div>
-      }
-
-          if (status === 'rejected') {
-              return <h2>{error.message}</h2>
-          }
-
-          if (status === 'resolved') {
-              return <ImageGalleryList>
+return <ImageGalleryList>
                   
-              {pictures.map(({webformatURL, id, largeImageURL})=><ImageGalleryItem URL={webformatURL} LargeUrl={largeImageURL} key={id}>    
+{pictures.map(({webformatURL, id, largeImageURL})=><ImageGalleryItem URL={webformatURL} LargeUrl={largeImageURL} key={id}>    
               
-              </ImageGalleryItem>)}
-              </ImageGalleryList>
-              
-          }
-
-    
+ </ImageGalleryItem>)}
+ </ImageGalleryList>
 }
 
 // class ImageGallery extends Component {

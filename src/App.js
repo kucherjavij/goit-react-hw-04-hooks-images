@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 import Searchbar from './components/Searchbar'
 import ImageGallery from './components/ImageGallery'
 import Button from './components/Button';
 import {Conteiner} from './App.styled'
-
+import fetchIMG from './components/API'
 
 function App () {
 const [page, setPage] = useState(1);
 const [pictureName, setPictureName] = useState('');
+const [pictures, setPicture] = useState(null);
 const [status, setStatus] = useState('idle');
+const [error, setError] = useState(null);
   
   
  const onLoadMore = () => {
@@ -22,13 +24,47 @@ const [status, setStatus] = useState('idle');
     }
     
   }
-  
+
+  useEffect(() => {
+    if (!pictureName) {
+        return
+    }
+    
+    setStatus('pending');
+    fetchIMG(pictureName, 1)
+    .then(picture => {
+        setPicture(picture.hits);
+        setStatus('resolved')})
+    .catch(error =>{ 
+        setError(error);
+        setStatus('rejected')} )
+}, [pictureName]);
+
+useEffect(() => {
+    if (!pictureName) {
+        return
+    }
+    if (page !== 1) {
+        fetchIMG(pictureName, page)
+    .then(picture =>{ 
+        setPicture(
+       [ ...pictures,
+        ...picture.hits,]
+      );
+      setStatus('resolved')})
+    .catch(error => {
+        setError(error);
+        setStatus('rejected')})
+    }
+}, [page]); 
+  console.log(pictureName);
 
       return <Conteiner>
   <Searchbar onSubmit={handleFormSubmit}/>
-
-
-  <ImageGallery pictureName={pictureName} page={page} handelStatus={setStatus} status={status}/>
+  {status === 'idle' && <div>Write something...</div>}
+  {status === 'pending' && <div>Loading...</div>}
+  {status === 'rejected' && <h2>{error.message}</h2>}
+  {status === 'resolved' && <ImageGallery pictures={pictures}/>}
   {pictureName && <Button onLoadNext={onLoadMore} />}
       </Conteiner>;
     
